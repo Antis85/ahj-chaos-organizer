@@ -1,0 +1,269 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: lightskyblue;
+}
+
+span {
+  line-height: auto;
+}
+
+.main_container {
+  height: 100vh;
+}
+
+.hidden_file_input {
+  position: absolute;
+  top: -1000px;
+}
+
+.timeline_header {
+  min-height: 2rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 2rem;
+  align-items: end;
+  background-color: steelblue;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.modal_content {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 1rem;
+  border: 1px solid ghostwhite;
+  border-radius: 10px;
+  box-sizing: border-box;
+  width: 480px;
+  background-color: ghostwhite;
+}
+
+.dropzone {
+  border: 5px dashed ghostwhite;
+  border-radius: 50px;
+  width: 320px;
+  height: 320px;
+  background-color: transparent;
+  color: ghostwhite;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.dropzone div {
+  margin: auto;
+}
+
+.modal_content div>p {
+  margin-bottom: 1rem;
+}
+
+.modal_form {
+  display: flex; 
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; 
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: auto;
+}
+
+.timeline_form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 2rem;
+  align-items: end;
+  background-color: steelblue;
+}
+
+.modal_form_controls {
+  align-self: end;
+}
+
+.modal_input {
+  box-sizing: border-box;
+  align-self: stretch;
+  border: 1px solid ghostwhite;
+  border-radius: 10px;
+  padding: 1.0rem 0.5rem;
+  margin-bottom: 1rem;
+  resize: none;
+}
+
+.modal_footer {
+  margin-bottom: 1rem;
+  color: red;
+  font-size: 0.625rem;
+}
+
+.modal_button {
+  padding: 0.5rem 1rem;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+button:hover {
+  cursor: pointer;
+  box-shadow: inset 0 0 5px;
+} 
+
+button:focus {
+  box-shadow: 0 0 5px;  
+}
+
+.timeline_widget {
+  min-width: 480px;
+  padding: 1rem;
+  background-color: lightskyblue;
+}
+
+.timeline_posts {
+  margin-top: 2rem;
+  margin-bottom: 6rem;
+  padding: 1rem 1rem 1rem 1rem;
+  font-size: 0.625rem;
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+}
+
+.post_content {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  border: solid 1px plum;
+  border-radius: 10px;
+  padding: 1rem;
+  background-color: plum;
+  width: 50%;
+}
+
+.post_content span:first-child {
+  align-self: end;
+}
+
+.post_content div {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  /* overflow: auto; */
+  overflow-wrap: anywhere;
+}
+
+.post_content img, .post_content audio, .post_content video {
+  max-width: 100%;
+}
+
+.post_content a {
+  text-decoration: none;  
+  color: black;
+}
+
+.post_content a:hover {
+  color: ghostwhite;
+}
+
+.post_content a:visited {
+  color: none;
+}
+
+.content_download {
+  cursor: pointer;
+}
+
+.content_download:hover {
+  color: ghostwhite;
+}
+
+.video_player {  
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: auto;
+    position: fixed;
+    bottom: 7rem;
+    left: 0;
+    padding: 2rem 2rem 0 2rem;
+    background-color: steelblue;
+  }
+
+.timeline_input {
+  border-radius: 25px;
+  align-self: stretch;
+  padding: 1rem;
+  resize: none;
+}
+
+.timeline_controls {
+  display: flex;
+  position: absolute;
+  z-index: 1;
+  right: 2rem;
+}
+
+.timeline_button {  
+  min-width: 2rem;
+  min-height: 2rem;
+  margin-right: 1rem;
+  background-color: lightgray;
+  border: 1px solid lightgray;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.timeline_button:hover {
+  background-color: lightgreen;
+  border-color: lightgreen;
+  font-weight: bold;
+} 
+
+.timeline_record_time {
+  margin-right: 1rem;
+  padding: 0.5rem 0;
+}
+
+.timeline_record_time span {
+  vertical-align: middle;
+}
+
+.invalid {
+  border: 1px solid red;
+}
+
+.hidden {
+  display: none;
+}
