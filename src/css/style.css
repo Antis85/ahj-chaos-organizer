@@ -42,6 +42,55 @@ span {
   margin-top: auto;
 }
 
+.pinned_bar {
+  display: flex;
+  /* border: 5px solid; */
+  width: 100%;
+  box-sizing: border-box;
+  position: fixed;
+  height: 6rem;
+  left: 0;
+  top: 4rem;
+  padding: 1rem;
+  background-color: deepskyblue;
+  /* border: 1rem solid lightgrey; */
+}
+
+.pinned_bar_remove {
+margin-left: auto;
+cursor: pointer;
+color: dimgray;
+font-weight: bold;
+line-height: 1;
+text-align: center;
+height: 2rem;
+width: 2rem;
+font-size: 2rem;
+}
+
+.pinned_bar_remove:hover {
+  color: white;  
+}
+
+.pinned_bar_content {
+  cursor: pointer;
+  align-self: center;
+  border-left: 0.5rem solid dimgray;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 1rem;
+}
+
+.pinned_bar_content:hover {
+  border-left: 0.5rem solid white;
+}
+
+.pinned_bar_content img, .pinned_bar_content audio, .pinned_bar_content video {
+  max-height: 100%;
+}
+  
+
 .modal {
   display: flex;
   justify-content: center;
@@ -67,7 +116,7 @@ span {
   background-color: ghostwhite;
 }
 
-.dropzone {
+.drop_box {
   border: 5px dashed ghostwhite;
   border-radius: 50px;
   width: 320px;
@@ -78,7 +127,7 @@ span {
   text-align: center;
 }
 
-.dropzone div {
+.drop_box div {
   margin: auto;
 }
 
@@ -156,17 +205,19 @@ button:focus {
   display: flex;
   flex-direction: column; 
   align-items: center; 
+  /* overflow-y: scroll; */
 }
 
 .post_content {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  box-sizing: border-box;
   margin-top: 1rem;
-  border: solid 1px plum;
+  border: solid 1px lightblue;
   border-radius: 10px;
   padding: 1rem;
-  background-color: plum;
+  background-color: lightblue;
   width: 50%;
 }
 
@@ -174,7 +225,7 @@ button:focus {
   align-self: end;
 }
 
-.post_content div {
+.post_content .content {
   margin-bottom: 0.5rem;
   font-size: 1rem;
   /* overflow: auto; */
@@ -205,6 +256,37 @@ button:focus {
 .content_download:hover {
   color: ghostwhite;
 }
+
+.post_footer_bar {
+  display: flex;
+  height: 1rem;
+}
+
+.coordinates {
+    margin-right: auto;
+}
+
+/* .pin_icon {
+  margin-left: auto;
+} */
+
+.pin_icon:hover {
+  cursor: pointer;
+  /* display: block; */
+}
+
+.fav_icon {
+  margin-left: 0.5rem;
+}
+
+.fav_icon:hover {
+  cursor: pointer;
+  /* display: block; */
+}
+
+/* .pressed {
+  display: block;
+} */
 
 .video_player {  
     text-align: center;
@@ -259,6 +341,11 @@ button:focus {
 .timeline_record_time span {
   vertical-align: middle;
 }
+
+/* .header_controls {
+  position: static;
+  margin-left: auto;
+} */
 
 .invalid {
   border: 1px solid red;

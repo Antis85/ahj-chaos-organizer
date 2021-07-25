@@ -21,7 +21,7 @@ export default class WidgetTimeLine {
     this.buttonVideo = this.container.querySelector('[data-id=timelineVideoButton]');
     this.buttonSubmitRecord = this.container.querySelector('[data-id=timelineSubmitRecordButton]');
     this.buttonCancelRecord = this.container.querySelector('[data-id=timelineCancelRecordButton]');
-
+    this.pinnedHeaderBar = this.container.querySelector('[data-id=headerPinnedBar]');
     // temp plug + lazyload
     document.addEventListener('DOMContentLoaded', () => {
       console.log('DOM готов!');
@@ -73,103 +73,74 @@ export default class WidgetTimeLine {
       });
     });
 
-    this.container.addEventListener('dragover', (evt) => {
-      evt.preventDefault();
-      console.log('dragover');
-      if (!this.container.querySelector('[data-modal=modal]')) {
-        const dropZonePlug = document.createElement('div');
-        dropZonePlug.classList.add('modal');
-        dropZonePlug.dataset.modal = 'modal';
-        const dropBox = document.createElement('div');
-        dropBox.classList.add('modal_content');
-        dropBox.classList.add('dropzone');
-        const dropBoxText = document.createElement('div');
-        dropBoxText.textContent = 'drop files here';
-        dropZonePlug.append(dropBox);
-        dropBox.append(dropBoxText);
-        this.container.append(dropZonePlug);
-
-        /* dropZonePlug.addEventListener('dragleave', (event) => {
-          console.log('dropZonePlug_dragleave');
-          console.log('dropZonePlug_dragleave_event_relatedTarget', event.relatedTarget);
-          // пока выключил для отладки:
-          if (!event.relatedTarget) dropZonePlug.remove();
-        }); */
-        document.addEventListener('dragleave', (event) => {
-          console.log('dropZonePlug_dragleave');
-          console.log('dropZonePlug_dragleave_event_relatedTarget', event.relatedTarget);
-          // пока выключил для отладки:
-          if (!event.relatedTarget) dropZonePlug.remove();
-        });
+    this.pinnedHeaderBar.addEventListener('click', ({ target, currentTarget }) => {
+      console.log('target, currentTarget:', target, currentTarget);
+      // при клике на "X" убираем закреп-область и снимаем закреп с поста
+      const postBoard = this.container.querySelector('.timeline_posts');
+      if (target && target.dataset.id === 'headerPinnedBarCloseButton') {
+        console.log('this.pinnedHeaderBar_content:', this.pinnedHeaderBar.querySelector('[data-id=headerPinnedBarContent]').innerHTML);
+        this.pinnedHeaderBar.querySelector('[data-id=headerPinnedBarContent]').innerHTML = '';
+        this.pinnedHeaderBar.classList.add('hidden');
+        console.log('this.container.querySelector_pinned:', this.container.querySelector('.pinned'));
+        postBoard.querySelector('.pinned').classList.remove('pinned');
+        postBoard.querySelector('.pressed').classList.add('hidden');
+        postBoard.querySelector('.pressed').classList.remove('pressed');
+        postBoard.style.marginTop = '';
+      }
+      // при клике на закреп-область делаем скролл к закрепленному посту
+      if (target.dataset.id === 'headerPinnedBarContent') {
+        console.log('should scroll to pinned');
+        console.log(' postBoard.querySelector_.pinned:', postBoard.querySelector('.pinned'));
+        postBoard.querySelector('.pinned').scrollIntoView(false);
+        const deltaY = postBoard.querySelector('.pinned').clientHeight;
+        // console.log('deltaY:', deltaY);
+        window.scrollBy(0, deltaY);
       }
     });
 
-    this.container.addEventListener('drop', (evt) => {
-      evt.preventDefault();
-      const files = Array.from(evt.dataTransfer.files);
-      const fileType = files[0].type.replace(/\/.+/, '');
-      // console.log('fileType:', fileType);
-      let tagName = '';
-      if (fileType === 'image') {
-        tagName = 'img';
-      } else if (fileType === 'audio' || fileType === 'video') {
-        tagName = `${fileType}`;
-      } else return;// может сделать всплывашку, что тип файла не поддерживается?
-      const fileContent = document.createElement(tagName);
-      // console.log('files[0].type:', files[0].type);
-      // console.log('files[0].name:', files[0].name);
-      if (fileType === 'audio' || fileType === 'video') {
-        fileContent.controls = true;
-      }
-      fileContent.dataset.name = files[0].name;
-      // fileContent.title = `Скачать ${fileContent.dataset.name}`;
-      fileContent.src = URL.createObjectURL(files[0]);
-      this.postContent = fileContent;
-      // console.log('files[0]:', files[0], files[0].type);
-      // this.postContent.addEventListener('load', () => {
-      //   console.log('load');
-      //   // URL.revokeObjectURL(fileContent.src); // не дает скачивать
-      // });
+    document.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      console.log('dragover');
+      // console.log('this.container.querySelector("[data-modal=modal]")');
+      if (this.container.querySelector('[data-modal=modal]')) return;
+      if (!this.container.querySelector('[data-id=dropZone]')) {
+        const dropZoneHtml = `
+        <div data-id="dropZone" class="drop_zone modal">
+          <div data-id="dropBox" class="drop_box modal_content">
+            <div data-id="dropText" class="drop_text">
+            drop image audio video here
+            </div>
+          </div>
+        </div>
+        `;
 
-      this.checkGeoLocAPI(this.postContent);
-      const dropZonePlug = this.container.querySelector('[data-modal=modal]');
-      dropZonePlug.remove();
-      // URL.revokeObjectURL(fileContent.src);
-      // console.log('fileContent:', fileContent);
-      // console.log('fileContent.src:', fileContent.src);
-      // console.log('this.postContent.src:', this.postContent.src);
+        this.container.insertAdjacentHTML('beforeend', dropZoneHtml);
+      }
+    });
+
+    document.addEventListener('dragleave', (event) => {
+      console.log('dropZonePlug_dragleave');
+      console.log('dropZonePlug_dragleave_event_relatedTarget', event.relatedTarget);
+      if (this.container.querySelector('[data-modal=modal]')) return;
+      if (!event.relatedTarget) this.container.querySelector('[data-id=dropZone]').remove();
+    });
+
+    document.addEventListener('drop', (event) => {
+      event.preventDefault();
+    });
+
+    this.container.addEventListener('drop', (event) => {
+      event.preventDefault();
+      if (this.container.querySelector('[data-modal=modal]')) return;
+      this.saveExternalFile(event.dataTransfer.files);
+      this.container.querySelector('[data-id=dropZone]').remove();
     });
 
     this.attachButton.addEventListener('click', () => {
       console.log('attach_click');
       this.hiddenFileInput.dispatchEvent(new MouseEvent('click'));
-      this.hiddenFileInput.addEventListener('change', (evt) => {
-        // const [files] = evt.currentTarget;
-        const files = Array.from(evt.currentTarget.files);
-        const fileType = files[0].type.replace(/\/.+/, '');
-        // console.log('fileType:', fileType);
-        let tagName = '';
-        if (fileType === 'image') {
-          tagName = 'img';
-        } else if (fileType === 'audio' || fileType === 'video') {
-          tagName = `${fileType}`;
-        } else return;// может сделать всплывашку, что тип файла не поддерживается?
-        const fileContent = document.createElement(tagName);
-        // console.log('files[0].type:', files[0].type);
-        // console.log('files[0].name:', files[0].name);
-        if (fileType === 'audio' || fileType === 'video') {
-          fileContent.controls = true;
-        }
-        fileContent.dataset.name = files[0].name;
-        fileContent.title = `Скачать ${fileContent.dataset.name}`;
-        fileContent.src = URL.createObjectURL(files[0]);
-        this.postContent = fileContent;
-        // console.log('files[0]:', files[0], files[0].type);
-        this.checkGeoLocAPI(this.postContent);
-        // URL.revokeObjectURL(fileContent.src); // не дает скачивать
-        console.log('fileContent:', fileContent);
-        console.log('fileContent.src:', fileContent.src);
-        console.log('this.postContent.src:', this.postContent.src);
+      this.hiddenFileInput.addEventListener('change', (event) => {
+        this.saveExternalFile(event.currentTarget.files);
       });
     });
 
@@ -197,6 +168,35 @@ export default class WidgetTimeLine {
     this.buttonCancelRecord.addEventListener('click', () => {
       this.postContent = null;
     });
+  }
+
+  saveExternalFile(filesToSave) {
+    // const files = Array.from(event.currentTarget.files);
+    const files = Array.from(filesToSave);
+    const fileType = files[0].type.replace(/\/.+/, '');
+    // console.log('fileType:', fileType);
+    let tagName = '';
+    if (fileType === 'image') {
+      tagName = 'img';
+    } else if (fileType === ('audio' || 'video')) {
+      tagName = `${fileType}`;
+    } else return;// может сделать всплывашку, что тип файла не поддерживается?
+    const fileContent = document.createElement(tagName);
+    // console.log('files[0].type:', files[0].type);
+    // console.log('files[0].name:', files[0].name);
+    if (fileType === ('audio' || 'video')) {
+      fileContent.controls = true;
+    }
+    fileContent.dataset.name = files[0].name;
+    // fileContent.title = `Скачать ${fileContent.dataset.name}`;
+    fileContent.src = URL.createObjectURL(files[0]);
+    this.postContent = fileContent;
+    // console.log('files[0]:', files[0], files[0].type);
+    this.checkGeoLocAPI(this.postContent);
+    // URL.revokeObjectURL(fileContent.src); // не дает скачивать
+    // console.log('fileContent:', fileContent);
+    // console.log('fileContent.src:', fileContent.src);
+    // console.log('this.postContent.src:', this.postContent.src);
   }
 
   async recordByMediaType(eventTarget) {
@@ -314,18 +314,27 @@ export default class WidgetTimeLine {
         <div data-widget="timelineWidget" class="timeline_widget">
           <input data-id="fileInput" class="hidden_file_input" type="file">
           <div data-id="timelineHeader" class="timeline_header">
-          <div data-id="headerControls" class="timeline_controls header_controls">
-          <div data-id="timelineSearchButton" class="timeline_button search_button">
-            <span>&#128270;</span>
+            <div data-id="headerControls" class="timeline_controls header_controls">
+              <div data-id="timelineSearchButton" class="timeline_button search_button">
+                <span>&#128270;</span>
+              </div>
+              <div data-id="timelineAttachButton" class="timeline_button attach_button">
+                <span>&#128206;</span>
+              </div>
+              <div data-id="timelineMenuButton" class="timeline_button menu_button">
+                <span>&#8942;</span>            
+              </div>          
+            </div>
           </div>
-          <div data-id="timelineAttachButton" class="timeline_button attach_button">
-            <span>&#128206;</span>
+          
+          <div data-id="headerPinnedBar" class="pinned_bar hidden">
+            <div data-id="headerPinnedBarContent" class="pinned_bar_content">
+            </div>
+            <div data-id="headerPinnedBarCloseButton" class="pinned_bar_remove">
+            &times;              
+            </div>
           </div>
-          <div data-id="timelineMenuButton" class="timeline_button menu_button">
-            <span>&#8942;</span>
-          </div>          
-        </div>
-          </div>
+
           <div data-id="timelinePosts" class="timeline_posts">
           </div>    
           <form data-id="timelineForm" class="modal_form timeline_form">
@@ -410,18 +419,100 @@ export default class WidgetTimeLine {
     const timeStampEl = document.createElement('span');
     const postContentEl = document.createElement('div');
     const postContentDownload = document.createElement('div');
-    const coordsEl = document.createElement('span');
+    const postFooterBar = document.createElement('div');
+    const coordsEl = document.createElement('div');
+    const pinEl = document.createElement('div');
+    const favEl = document.createElement('div');
 
     postElement.classList.add('post_content');
     postElement.dataset.id = 'postContent';
-    timeStampEl.innerText = `${date} ${time}`;
-    coordsEl.innerHTML = `${coordinates}`;
+    timeStampEl.innerHTML = `${date} ${time}`;
+    postContentEl.classList.add('content');
     postContentDownload.classList.add('hidden');
+    postFooterBar.classList.add('post_footer_bar');
+    coordsEl.classList.add('coordinates');
+    pinEl.classList.add('hidden');
+    pinEl.classList.add('pin_icon');
+    favEl.classList.add('hidden');
+    favEl.classList.add('fav_icon');
+
+    coordsEl.innerHTML = `${coordinates}`;
+    pinEl.innerHTML = '&#128204;';
+    favEl.innerHTML = '&#9734;';
+    // favEl.innerHTML = '&#9733;';
 
     postElement.append(timeStampEl);
     postElement.append(postContentEl);
     postElement.append(postContentDownload);
-    postElement.append(coordsEl);
+    postFooterBar.append(coordsEl);
+    postFooterBar.append(pinEl);
+    postFooterBar.append(favEl);
+    postElement.append(postFooterBar);
+
+    // вывести pin в отдельный метод
+    pinEl.addEventListener('click', () => {
+      console.log('pinEl click');
+      pinEl.classList.toggle('pressed');
+      // TODO: если уже есть закрепленный пост, то он открепляется
+      // 1) ищем среди постов закрепленный,
+      // убираем у него класс pinned,
+      // добавляем класс pinned, новому посту,
+      // обновляем содержимое pinned-области
+      // 2) если среди постов нет класса pinned,
+      // то нужно отобразить pinned-область,
+      // и обновляем содержимое pinned-области
+      // 3) если кликаем на уже закрепленном посте, то
+      // убираем у него класс pinned,
+      // удаляем содержимое pinned-области,
+      // скрываем pinned-область
+      const pinnedHeaderBarContent = this.pinnedHeaderBar.querySelector('[data-id=headerPinnedBarContent]');
+      // 1)
+      if (postBoard.querySelector('.pinned')) {
+        const existPinned = postBoard.querySelector('.pinned');
+        console.log('existPinned', existPinned);
+        const newPinned = pinEl.closest('[data-id=postContent]');
+        if (existPinned !== newPinned) {
+          console.log('should new pin');
+          existPinned.classList.remove('pinned');
+          console.log('existPinned.querySelector_pin_icon', existPinned.querySelector('.pin_icon'));
+          existPinned.querySelector('.pin_icon').classList.remove('pressed');
+          existPinned.querySelector('.pin_icon').classList.add('hidden');
+          newPinned.classList.add('pinned');
+          this.pinnedHeaderBar.classList.remove('hidden');
+          pinnedHeaderBarContent.innerHTML = newPinned.closest('[data-id=postContent]').querySelector('div').innerHTML;
+          postBoard.style.marginTop = '8rem';
+        }
+        // 3)
+        if (existPinned === newPinned) {
+          console.log('should pin off');
+          existPinned.classList.remove('pinned');
+          this.pinnedHeaderBar.classList.add('hidden');
+          pinnedHeaderBarContent.innerHTML = '';
+          postBoard.style.marginTop = '';
+        }
+      } else { // 2)
+        console.log('no exist, should new pin');
+        postElement.classList.add('pinned');
+        this.pinnedHeaderBar.classList.remove('hidden');
+        pinnedHeaderBarContent.innerHTML = pinEl.closest('[data-id=postContent]').querySelector('div').innerHTML;
+        postBoard.style.marginTop = '8rem';
+        postElement.scrollIntoView();
+      }
+    });
+    favEl.addEventListener('click', () => {
+      // console.log('favEl click');
+      favEl.classList.toggle('pressed');
+    });
+    postElement.addEventListener('mouseover', () => {
+      // console.log('post mouseover');
+      if (pinEl.classList.contains('hidden')) pinEl.classList.remove('hidden');
+      if (favEl.classList.contains('hidden')) favEl.classList.remove('hidden');
+    });
+    postElement.addEventListener('mouseleave', () => {
+      // console.log('post mouseleave');
+      if (!pinEl.classList.contains('hidden') && !pinEl.classList.contains('pressed')) pinEl.classList.add('hidden');
+      if (!favEl.classList.contains('hidden') && !favEl.classList.contains('pressed')) favEl.classList.add('hidden');
+    });
 
     if (typeof postContent === 'string') {
       postContentEl.innerHTML = postContent;
@@ -429,7 +520,6 @@ export default class WidgetTimeLine {
       postContentEl.append(postContent);
       // добавляем возможность скачивания файла
       postContentDownload.innerHTML = '&#10515; Скачать файл';
-      // postContentDownload.classList.add('hidden');
       postContentDownload.classList.add('content_download');
       postContentDownload.title = `Скачать ${postContent.dataset.name}`;
       // const contentDownloadButton = postElement.querySelector('.content_download');
@@ -462,5 +552,6 @@ export default class WidgetTimeLine {
 
     postBoard.append(postElement);
     this.postContent = null;
+    postBoard.lastElementChild.scrollIntoView();
   }
 }
