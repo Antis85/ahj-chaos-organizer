@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-export default function timerFunction(/* timer */minutes, secondes) {
+export default function timerFunction(minutes, secondes) {
   const sec = (+secondes.innerText + 1) % 60;
   if (sec < 10) secondes.innerText = `0${sec}`;
   if (sec >= 10) secondes.innerText = sec;

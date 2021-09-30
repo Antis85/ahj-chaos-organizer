@@ -222,7 +222,8 @@ button:focus {
 }
 
 .post_content span:first-child {
-  align-self: end;
+  /* align-self: end; */
+  margin-left: auto;
 }
 
 .post_content .content {
@@ -263,7 +264,7 @@ button:focus {
 }
 
 .coordinates {
-    margin-right: auto;
+  margin-right: auto;
 }
 
 /* .pin_icon {
@@ -284,7 +285,7 @@ button:focus {
   /* display: block; */
 }
 
-/* .pressed {
+/* .active {
   display: block;
 } */
 

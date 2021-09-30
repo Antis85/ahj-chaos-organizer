@@ -9,15 +9,16 @@ export default function checkCoordinatesValidity(inputValue) {
   }
 
   if (newValue.length !== 2) return validObj;
-  const lat = parseFloat(newValue[0].trim());
-  const lng = parseFloat(newValue[1].trim());
+  // lat и lng - строки
+  const lat = parseFloat(newValue[0].trim()).toFixed(5);
+  const lng = parseFloat(newValue[1].trim()).toFixed(5);
 
   if (!Number.isNaN(lat) && Math.abs(lat) <= 90) {
-    validObj.lat = lat;
+    validObj.latitude = lat;
   }
 
   if (!Number.isNaN(lng) && Math.abs(lng) <= 180) {
-    validObj.lng = lng;
+    validObj.longitude = lng;
   }
 
   return validObj;

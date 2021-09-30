@@ -1,21 +1,13 @@
-import WidgetTimeLine from './widgetTimeLine';
+import ChaosOrganizer from './ChaosOrganizer';
+import Socket from './WebSocketAPI';
+import Fetch from './FetchAPI';
 
-// temp plug
-const initialPosts = [];
-for (let i = 1; i < 30; i += 1) {
-  initialPosts.push(
-    `<div class="post_content" data-id="postContent" data-counter="${i}">
-      <span>26.07.2021 00:40:41</span>
-      <div class="content">${i}</div>
-      <div class="hidden"></div>
-      <div class="post_footer_bar">
-        <div class="coordinates">[56.2364416, 43.4372608] &#128065;</div>
-        <div class="pin_icon hidden">📌</div>
-        <div class="fav_icon hidden">☆</div>
-      </div>
-    </div>`,
-  );
-}
-
-const widgetTimeLine = new WidgetTimeLine(initialPosts);
-widgetTimeLine.init();
+const urlWS = 'wss://ahj-chaos-organizer.herokuapp.com';
+const urlHTTP = 'https://ahj-chaos-organizer.herokuapp.com';
+// const urlWS = 'ws://localhost:7070';
+// const urlHTTP = 'http://localhost:7070';
+const socket = new Socket(urlWS);
+// socket.initWsHandlers();
+const fetch = new Fetch(urlHTTP, socket);
+const chaosOrganizer = new ChaosOrganizer(fetch, socket);
+chaosOrganizer.init();

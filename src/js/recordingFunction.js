@@ -1,14 +1,14 @@
 import timerFunction from './timerFunction';
-import PopupMessage from './popupMessage';
+import getCoordinates from './getCoordinates';
+import Modal from './Modal';
 
-export default async function recordingFunction(mediatype) {
+export default async function recordingFunction(mediaType, fetch) {
   if (!navigator.mediaDevices) {
     console.log('navigator.mediaDevices not available');
     return false;
   }
 
-  let mediaContent;
-  const mediaType = mediatype;
+  const mediaContent = {};
 
   try {
     if (!window.MediaRecorder) {
@@ -19,9 +19,9 @@ export default async function recordingFunction(mediatype) {
     const container = document.querySelector('.main_container');
     const timer = container.querySelector('[data-id=timelineRecordTime]');
     const minutes = timer.querySelector('[data-timer=timerMinutes]');
-    const secondes = timer.querySelector('[data-timer=timerSecondes]');
+    const seconds = timer.querySelector('[data-timer=timerSeconds]');
     minutes.innerText = '00';
-    secondes.innerText = '00';
+    seconds.innerText = '00';
     const submitButton = container.querySelector('[data-id=timelineSubmitRecordButton]');
     const cancelButton = container.querySelector('[data-id=timelineCancelRecordButton]');
     const widgetTimelineForm = container.querySelector('[data-id=timelineForm]');
@@ -42,46 +42,55 @@ export default async function recordingFunction(mediatype) {
       widgetTimelineForm.before(videoPlayer);
     }
 
+    const finishRecord = () => {
+      clearInterval(timerId);
+      // stream.getTracks().forEach((track) => track.stop());
+      media.srcObject = null;
+      videoPlayer.remove();
+    };
+
+    const saveRecord = () => {
+      const extFile = chunks[0].type.replace(/;.+/, '').split('/')[1];
+      mediaContent.file = new File(chunks, `${mediaType}record_${+new Date()}.${extFile}`);
+      mediaContent.type = 'file';
+      mediaContent.fileType = mediaType;
+      getCoordinates(mediaContent, fetch);
+    };
+
     const submitRecord = () => {
       recorder.stop();
       submitButton.removeEventListener('click', submitRecord);
     };
 
     const cancelRecord = () => {
-      recorder.stop();
+      finishRecord();
       cancelButton.removeEventListener('click', cancelRecord);
     };
 
     recorder.addEventListener('start', () => {
-      console.log('recording started');
-      timerId = setInterval(() => timerFunction(minutes, secondes), 1000);
+      // console.log('recording started');
+      timerId = setInterval(() => timerFunction(minutes, seconds), 1000);
     });
 
     recorder.addEventListener('dataavailable', (evt) => {
-      console.log('data available');
+      // console.log('data available');
       chunks.push(evt.data);
+      if (evt.data.size > 0) saveRecord();
     });
 
     submitButton.addEventListener('click', submitRecord);
-
     cancelButton.addEventListener('click', cancelRecord);
-
     recorder.addEventListener('stop', () => {
-      const blob = new Blob(chunks);
-      media.src = URL.createObjectURL(blob);
-      media.controls = true;
-      clearInterval(timerId);
       stream.getTracks().forEach((track) => track.stop());
-      media.srcObject = null;
-      videoPlayer.remove();
+      finishRecord();
     });
 
     recorder.start();
-    mediaContent = media;
   } catch (e) {
     console.error(e);
-    const popup = new PopupMessage();
+    const popup = new Modal();
     popup.showMessage();
   }
-  return mediaContent;
+
+  return false;
 }
