@@ -1,26 +1,26 @@
 import checkCoordinatesValidity from '../checkCoordinatesValidity';
 
 test('Coords OK with space', () => {
-  const input = '-89.132, 179.123';
-  const expected = { lat: -89.132, lng: 179.123 };
+  const input = '-89.12345, 179.12345';
+  const expected = { latitude: '-89.12345', longitude: '179.12345' };
   expect(checkCoordinatesValidity(input)).toEqual(expected);
 });
 
 test('Coords OK with space and brackets', () => {
-  const input = '[89.132, -179.123]';
-  const expected = { lat: 89.132, lng: -179.123 };
+  const input = '[89.12345, -179.12345]';
+  const expected = { latitude: '89.12345', longitude: '-179.12345' };
   expect(checkCoordinatesValidity(input)).toEqual(expected);
 });
 
 test('Coords OK without space', () => {
-  const input = '[0.132,1.123]';
-  const expected = { lat: 0.132, lng: 1.123 };
+  const input = '[0.12345,1.12345]';
+  const expected = { latitude: '0.12345', longitude: '1.12345' };
   expect(checkCoordinatesValidity(input)).toEqual(expected);
 });
 
 test('Coords OK without space and brackets', () => {
   const input = '0,0';
-  const expected = { lat: 0, lng: 0 };
+  const expected = { latitude: '0.00000', longitude: '0.00000' };
   expect(checkCoordinatesValidity(input)).toEqual(expected);
 });
 
